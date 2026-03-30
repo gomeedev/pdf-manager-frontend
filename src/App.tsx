@@ -5,6 +5,7 @@ import { LandingPage } from '@/pages/LandingPage'
 import { LoginPage } from '@/pages/LoginPage'
 import { RegisterPage } from '@/pages/RegisterPage'
 import { DashboardPage } from '@/pages/DashboardPage'
+import { OperationsPage } from '@/pages/OperationsPage'
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -18,12 +19,14 @@ function AnimatedRoutes() {
       {/* Protected routes */}
       <Route element={<PrivateRoute />}>
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/dashboard/operations" element={<OperationsPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
 }
+
 
 
 function App() {
