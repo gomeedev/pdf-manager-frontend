@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { FileText, Download, Clock } from 'lucide-react'
+import { FileText, Download, Clock, Eye } from 'lucide-react'
 import { PDFFile } from '@/hooks/usePDFs'
 import { formatDate, truncate } from '@/utils/helpers'
 import { Button } from '@/components/ui/button'
@@ -8,10 +8,12 @@ import { Button } from '@/components/ui/button'
 interface PDFCardProps {
   pdf: PDFFile
   onDownload: (storagePath: string, filename: string) => Promise<void>
+  onPreview: (storagePath: string) => Promise<void>
 }
 
-export function PDFCard({ pdf, onDownload }: PDFCardProps) {
+export function PDFCard({ pdf, onDownload, onPreview }: PDFCardProps) {
   const [isDownloading, setIsDownloading] = useState(false)
+  const [isPreviewing, setIsPreviewing] = useState(false)
 
   const handleDownload = async () => {
     setIsDownloading(true)
@@ -19,6 +21,15 @@ export function PDFCard({ pdf, onDownload }: PDFCardProps) {
       await onDownload(pdf.storage_path, pdf.filename)
     } finally {
       setIsDownloading(false)
+    }
+  }
+
+  const handlePreview = async () => {
+    setIsPreviewing(true)
+    try {
+      await onPreview(pdf.storage_path)
+    } finally {
+      setIsPreviewing(false)
     }
   }
 
@@ -35,20 +46,34 @@ export function PDFCard({ pdf, onDownload }: PDFCardProps) {
         <div className="p-3 bg-muted rounded-lg text-foreground">
           <FileText className="w-6 h-6" />
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="opacity-0 group-hover:opacity-100 transition-opacity"
-          onClick={handleDownload}
-          disabled={isDownloading}
-          title="Download PDF"
-        >
-          {isDownloading ? (
-            <div className="w-5 h-5 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <Download className="w-5 h-5" />
-          )}
-        </Button>
+        <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handlePreview}
+            disabled={isPreviewing}
+            title="Preview PDF"
+          >
+            {isPreviewing ? (
+              <div className="w-5 h-5 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Eye className="w-5 h-5" />
+            )}
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleDownload}
+            disabled={isDownloading}
+            title="Download PDF"
+          >
+            {isDownloading ? (
+              <div className="w-5 h-5 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Download className="w-5 h-5" />
+            )}
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-1">

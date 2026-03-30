@@ -7,9 +7,10 @@ interface PDFListProps {
   pdfs: PDFFile[]
   loading: boolean
   onDownload: (storagePath: string, filename: string) => Promise<void>
+  onPreview: (storagePath: string) => Promise<void>
 }
 
-export function PDFList({ pdfs, loading, onDownload }: PDFListProps) {
+export function PDFList({ pdfs, loading, onDownload, onPreview }: PDFListProps) {
   if (loading) {
     return (
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -45,6 +46,7 @@ export function PDFList({ pdfs, loading, onDownload }: PDFListProps) {
             key={pdf.id} 
             pdf={pdf} 
             onDownload={onDownload} 
+            onPreview={onPreview}
           />
         ))}
       </AnimatePresence>

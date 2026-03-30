@@ -10,7 +10,7 @@ import { FileStack } from 'lucide-react'
 
 export function DashboardPage() {
   const { user } = useAuth()
-  const { pdfs, loading, isUploading, uploadPdf, downloadPdf } = usePDFs()
+  const { pdfs, loading, isUploading, uploadPdf, downloadPdf, previewPdf } = usePDFs()
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -87,6 +87,7 @@ export function DashboardPage() {
               pdfs={pdfs} 
               loading={loading} 
               onDownload={downloadPdf} 
+              onPreview={previewPdf}
             />
           </motion.section>
 

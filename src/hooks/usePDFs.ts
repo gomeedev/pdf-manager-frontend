@@ -53,27 +53,37 @@ export function usePDFs() {
     }
   }
 
-  const downloadPdf = async (storagePath: string, filename: string) => {
+  const getFileUrl = async (storagePath: string) => {
     try {
       const { data, error } = await supabase.storage
         .from(PDF_BUCKET)
         .createSignedUrl(storagePath, SIGNED_URL_EXPIRY)
 
       if (error) throw error
-
-      if (data?.signedUrl) {
-        // Truco para forzar descarga: crear elemento ancla
-        const link = document.createElement('a')
-        link.href = data.signedUrl
-        link.download = filename
-        link.target = '_blank'
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-      }
+      return data?.signedUrl || null
     } catch (err: any) {
-      console.error('Download error:', err)
+      console.error('URL generation error:', err)
       throw err
+    }
+  }
+
+  const downloadPdf = async (storagePath: string, filename: string) => {
+    const url = await getFileUrl(storagePath)
+    if (url) {
+      const link = document.createElement('a')
+      link.href = url
+      link.download = filename
+      link.target = '_blank'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    }
+  }
+
+  const previewPdf = async (storagePath: string) => {
+    const url = await getFileUrl(storagePath)
+    if (url) {
+      window.open(url, '_blank')
     }
   }
 
@@ -84,6 +94,8 @@ export function usePDFs() {
     isUploading,
     uploadPdf,
     downloadPdf,
+    previewPdf,
     refreshPDFs: fetchPDFs,
   }
 }
+
