@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Global focus styles */
+  :focus-visible {
+    @apply outline-none ring-2 ring-foreground ring-offset-2 ring-offset-background;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground rounded-full;
+    opacity: 0.4;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-foreground;
+    opacity: 0.6;
+  }
+}
+
+@layer components {
+  /* Typography */
+  .heading-xl {
+    @apply text-5xl font-semibold tracking-tight leading-tight;
+  }
+
+  .heading-lg {
+    @apply text-3xl font-semibold tracking-tight;
+  }
+
+  .heading-md {
+    @apply text-2xl font-semibold tracking-tight;
+  }
+
+  .heading-sm {
+    @apply text-lg font-medium;
+  }
+
+  .body-lg {
+    @apply text-base text-muted-foreground leading-relaxed;
+  }
+
+  .body-sm {
+    @apply text-sm text-muted-foreground;
+  }
+
+  /* Layout */
+  .container-tight {
+    @apply max-w-4xl mx-auto px-6;
+  }
+
+  .container-wide {
+    @apply max-w-7xl mx-auto px-6;
+  }
+
+  /* Divider */
+  .divider {
+    @apply border-t border-border;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
