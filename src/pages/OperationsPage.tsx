@@ -7,7 +7,7 @@ import { MergeTool } from '@/components/pdf/MergeTool'
 import { SplitTool } from '@/components/pdf/SplitTool'
 import { CompressTool } from '@/components/pdf/CompressTool'
 import { RemovePagesTool } from '@/components/pdf/RemovePagesTool'
-import { FileStack, ArrowLeft, Layers, Scissors, Minimize2, Trash2 } from 'lucide-react'
+import { FileStack, ArrowLeft, Layers, Scissors, Minimize2, Trash2, Loader2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 
@@ -113,6 +113,11 @@ export function OperationsPage() {
                      <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
                      <p className="text-sm text-muted-foreground">Loading your library...</p>
                    </div>
+                 ) : pdfs.length === 0 ? (
+                   <div className="h-full flex flex-col items-center justify-center space-y-4">
+                     <FileStack className="w-8 h-8 text-muted-foreground opacity-50" />
+                     <p className="text-sm text-muted-foreground">No PDFs available. Upload some files in your library first.</p>
+                   </div>
                  ) : (
                     <motion.div
                       key={activeTool}
@@ -133,24 +138,5 @@ export function OperationsPage() {
         </main>
       </div>
     </PageTransition>
-  )
-}
-
-function Loader2(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-    </svg>
   )
 }

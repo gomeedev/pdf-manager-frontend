@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PDFFile } from '@/hooks/usePDFs'
+import { PDFFile, usePDFs } from '@/hooks/usePDFs'
 import { FileSelector } from './FileSelector'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { OperationStatus } from '@/hooks/useOperations'
 import { motion, Reorder } from 'framer-motion'
 import { Loader2, AlertCircle, FileText, CheckCircle2, Download } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 interface MergeToolProps {
   pdfs: PDFFile[]
@@ -18,6 +19,17 @@ interface MergeToolProps {
 export function MergeTool({ pdfs, status, onMerge, result }: MergeToolProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [outputFilename, setOutputFilename] = useState('merged_document.pdf')
+  const { downloadPdf } = usePDFs()
+
+  const handleDownload = async () => {
+    if (result?.data?.storage_path && result?.data?.filename) {
+      try {
+        await downloadPdf(result.data.storage_path, result.data.filename)
+      } catch (err) {
+        console.error('Download error:', err)
+      }
+    }
+  }
 
   // Sorting based on selected order
   const selectedPdfs = selectedIds.map(id => pdfs.find(p => p.id === id)!)
@@ -105,16 +117,28 @@ export function MergeTool({ pdfs, status, onMerge, result }: MergeToolProps) {
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-4 bg-muted rounded-xl flex items-center justify-between border border-border"
+              className="p-4 bg-muted rounded-xl flex items-center justify-between border border-border gap-3"
             >
               <div className="flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-foreground" />
                 <span className="text-sm font-medium">Files merged successfully!</span>
               </div>
-              <Button size="sm" variant="outline" className="h-9 px-4 gap-2">
-                <Download className="w-4 h-4" />
-                View in Dashboard
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="h-9 px-4 gap-2"
+                  onClick={handleDownload}
+                >
+                  <Download className="w-4 h-4" />
+                  Download
+                </Button>
+                <Link to="/dashboard">
+                  <Button size="sm" variant="ghost" className="h-9 px-4">
+                    View in Dashboard
+                  </Button>
+                </Link>
+              </div>
             </motion.div>
           )}
         </div>
