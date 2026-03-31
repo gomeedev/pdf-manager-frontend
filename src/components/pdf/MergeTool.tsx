@@ -42,7 +42,11 @@ export function MergeTool({ pdfs, status, onMerge, result, onPreview }: MergeToo
   const handleExecute = async (e: React.FormEvent) => {
     e.preventDefault()
     if (selectedIds.length < 2) return
-    await onMerge(selectedIds, outputFilename.endsWith('.pdf') ? outputFilename : `${outputFilename}.pdf`)
+    const data = await onMerge(selectedIds, outputFilename.endsWith('.pdf') ? outputFilename : `${outputFilename}.pdf`)
+    // Auto-preview the merged result in the Live Preview pane
+    if (data?.data?.storage_path) {
+      await onPreview(data.data.storage_path)
+    }
   }
 
   return (
