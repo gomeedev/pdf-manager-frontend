@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import { supabase } from '@/lib/supabaseClient'
-import { uploadPdf as apiUploadPdf } from '@/api/pdfs'
+import { uploadPdf as apiUploadPdf, deletePdfApi } from '@/api/pdfs'
 import { PDF_BUCKET, SIGNED_URL_EXPIRY } from '@/utils/constants'
 
 export interface PDFFile {
@@ -8,6 +8,7 @@ export interface PDFFile {
   user_id: string
   filename: string
   storage_path: string
+  size_bytes?: number
   created_at: string
 }
 
@@ -41,13 +42,11 @@ export function usePDFs() {
     setIsUploading(true)
     setError(null)
     try {
-      // Usar la función de Axios que enviará auth y FormData al backend.
       await apiUploadPdf(file)
-      // Refrescar lista tras subida exitosa.
       await fetchPDFs()
     } catch (err: any) {
       setError(err.message || 'Error uploading file')
-      throw err // propagar para que el componente UI lo capture
+      throw err
     } finally {
       setIsUploading(false)
     }
@@ -80,10 +79,18 @@ export function usePDFs() {
     }
   }
 
-  const previewPdf = async (storagePath: string) => {
-    const url = await getFileUrl(storagePath)
-    if (url) {
-      window.open(url, '_blank')
+  /** Returns signed URL so callers can open it however they like (modal, iframe, etc.) */
+  const previewPdf = async (storagePath: string): Promise<string | null> => {
+    return await getFileUrl(storagePath)
+  }
+
+  const deletePdf = async (id: string) => {
+    try {
+      await deletePdfApi(id)
+      await fetchPDFs()
+    } catch (err: any) {
+      console.error('API deletion error:', err)
+      throw err
     }
   }
 
@@ -95,7 +102,7 @@ export function usePDFs() {
     uploadPdf,
     downloadPdf,
     previewPdf,
+    deletePdf,
     refreshPDFs: fetchPDFs,
   }
 }
-

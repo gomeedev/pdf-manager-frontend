@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { PageTransition } from '@/components/animations/PageTransition'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/useAuth'
@@ -5,13 +6,20 @@ import { supabase } from '@/lib/supabaseClient'
 import { usePDFs } from '@/hooks/usePDFs'
 import { UploadDropzone } from '@/components/pdf/UploadDropzone'
 import { PDFList } from '@/components/pdf/PDFList'
+import { PDFPreviewModal } from '@/components/pdf/PDFPreviewModal'
 import { motion } from 'framer-motion'
 import { FileStack } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 export function DashboardPage() {
   const { user } = useAuth()
-  const { pdfs, loading, isUploading, uploadPdf, downloadPdf, previewPdf } = usePDFs()
+  const { pdfs, loading, isUploading, uploadPdf, downloadPdf, previewPdf, deletePdf } = usePDFs()
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+
+  const handlePreviewClick = async (storagePath: string) => {
+    const url = await previewPdf(storagePath)
+    if (url) setPreviewUrl(url)
+  }
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -95,16 +103,23 @@ export function DashboardPage() {
               </span>
             </div>
 
-            <PDFList 
-              pdfs={pdfs} 
-              loading={loading} 
-              onDownload={downloadPdf} 
-              onPreview={previewPdf}
+            <PDFList
+              pdfs={pdfs}
+              loading={loading}
+              onDownload={downloadPdf}
+              onPreview={handlePreviewClick}
+              onDelete={deletePdf}
             />
           </motion.section>
 
         </main>
       </div>
+
+      {/* PDF Preview Modal */}
+      <PDFPreviewModal
+        url={previewUrl}
+        onClose={() => setPreviewUrl(null)}
+      />
     </PageTransition>
   )
 }

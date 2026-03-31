@@ -25,3 +25,11 @@ export async function uploadPdf(file: File): Promise<UploadResponse> {
 
   return response.data
 }
+
+/**
+ * Delete a PDF file from the backend.
+ * DELETE /pdf-ops/{id}
+ */
+export async function deletePdfApi(id: string): Promise<void> {
+  await apiClient.delete(`/pdf-ops/${id}`)
+}
