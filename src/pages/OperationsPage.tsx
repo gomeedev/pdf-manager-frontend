@@ -7,16 +7,22 @@ import { MergeTool } from '@/components/pdf/MergeTool'
 import { SplitTool } from '@/components/pdf/SplitTool'
 import { CompressTool } from '@/components/pdf/CompressTool'
 import { RemovePagesTool } from '@/components/pdf/RemovePagesTool'
-import { FileStack, ArrowLeft, Layers, Scissors, Minimize2, Trash2, Loader2 } from 'lucide-react'
+import { FileStack, ArrowLeft, Layers, Scissors, Minimize2, Trash2, Loader2, EyeOff } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 
 type ToolType = 'merge' | 'split' | 'compress' | 'remove'
 
 export function OperationsPage() {
-  const { pdfs, loading } = usePDFs()
+  const { pdfs, loading, previewPdf } = usePDFs()
   const { status, error, result, merge, split, compress, removePages, reset } = useOperations()
   const [activeTool, setActiveTool] = useState<ToolType>('merge')
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+
+  const handlePreviewTrigger = async (storagePath: string) => {
+    const url = await previewPdf(storagePath) as string | null | void
+    if (url) setPreviewUrl(url as string)
+  }
 
   const tools = [
     { id: 'merge', label: 'Merge', icon: Layers, description: 'Combine multiple PDFs into one.' },
@@ -52,9 +58,9 @@ export function OperationsPage() {
           </div>
         </nav>
 
-        <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-12 flex flex-col md:flex-row gap-12">
+        <main className="flex-1 max-w-[1600px] w-full mx-auto px-6 py-8 flex flex-col md:flex-row gap-8">
           {/* Sidebar Tabs */}
-          <aside className="w-full md:w-64 space-y-6">
+          <aside className="w-full md:w-64 space-y-6 flex-shrink-0">
             <div className="space-y-1">
               <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-widest px-2 mb-4">Toolkit</h2>
               <div className="space-y-1">
@@ -80,7 +86,7 @@ export function OperationsPage() {
               </div>
             </div>
 
-            <div className="p-5 rounded-2xl bg-muted/50 border border-border space-y-3">
+            <div className="p-5 rounded-2xl bg-muted/50 border border-border space-y-3 hidden md:block">
               <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">About this tool</h4>
               <p className="text-xs leading-relaxed text-muted-foreground">
                 {tools.find(t => t.id === activeTool)?.description} All operations are processed on the server and saved back to your library.
@@ -88,52 +94,90 @@ export function OperationsPage() {
             </div>
           </aside>
 
-          {/* Tool Workspace */}
-          <div className="flex-1 space-y-8">
-             <header className="space-y-2">
-                <h1 className="heading-lg">
-                  {tools.find(t => t.id === activeTool)?.label} PDF
-                </h1>
-                {error && (
-                  <motion.div 
-                    initial={{ opacity: 0, x: -10 }} 
-                    animate={{ opacity: 1, x: 0 }}
-                    className="p-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-lg flex items-center gap-2"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    {error}
-                  </motion.div>
-                )}
-             </header>
-
-             <div className="bg-background rounded-2xl border border-border p-8 min-h-[400px]">
-               <AnimatePresence mode="wait">
-                 {loading ? (
-                   <div className="h-full flex flex-col items-center justify-center space-y-4">
-                     <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-                     <p className="text-sm text-muted-foreground">Loading your library...</p>
-                   </div>
-                 ) : pdfs.length === 0 ? (
-                   <div className="h-full flex flex-col items-center justify-center space-y-4">
-                     <FileStack className="w-8 h-8 text-muted-foreground opacity-50" />
-                     <p className="text-sm text-muted-foreground">No PDFs available. Upload some files in your library first.</p>
-                   </div>
-                 ) : (
-                    <motion.div
-                      key={activeTool}
-                      initial={{ opacity: 0, scale: 0.98 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.98 }}
-                      transition={{ duration: 0.2 }}
+          {/* Main Workspace Workspace */}
+          <div className="flex-1 flex flex-col xl:flex-row gap-8">
+            
+            {/* Tool Forms Area */}
+            <div className="flex-1 flex flex-col space-y-6">
+              <header className="space-y-2">
+                  <h1 className="heading-lg">
+                    {tools.find(t => t.id === activeTool)?.label} PDF
+                  </h1>
+                  {error && (
+                    <motion.div 
+                      initial={{ opacity: 0, x: -10 }} 
+                      animate={{ opacity: 1, x: 0 }}
+                      className="p-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-lg flex items-center gap-2"
                     >
-                      {activeTool === 'merge' && <MergeTool pdfs={pdfs} status={status} onMerge={merge} result={result} />}
-                      {activeTool === 'split' && <SplitTool pdfs={pdfs} status={status} onSplit={split} result={result} />}
-                      {activeTool === 'compress' && <CompressTool pdfs={pdfs} status={status} onCompress={compress} result={result} />}
-                      {activeTool === 'remove' && <RemovePagesTool pdfs={pdfs} status={status} onRemove={removePages} result={result} />}
+                      <Trash2 className="w-4 h-4" />
+                      {error}
                     </motion.div>
+                  )}
+              </header>
+
+              <div className="bg-background rounded-2xl border border-border p-6 xl:p-8 min-h-[500px]">
+                <AnimatePresence mode="wait">
+                  {loading ? (
+                    <div className="h-full flex flex-col items-center justify-center space-y-4">
+                      <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground">Loading your library...</p>
+                    </div>
+                  ) : pdfs.length === 0 ? (
+                    <div className="h-full flex flex-col items-center justify-center space-y-4">
+                      <FileStack className="w-8 h-8 text-muted-foreground opacity-50" />
+                      <p className="text-sm text-muted-foreground">No PDFs available. Upload some files in your library first.</p>
+                    </div>
+                  ) : (
+                      <motion.div
+                        key={activeTool}
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.98 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        {activeTool === 'merge' && <MergeTool pdfs={pdfs} status={status} onMerge={merge} result={result} onPreview={handlePreviewTrigger} />}
+                        {activeTool === 'split' && <SplitTool pdfs={pdfs} status={status} onSplit={split} result={result} onPreview={handlePreviewTrigger} />}
+                        {activeTool === 'compress' && <CompressTool pdfs={pdfs} status={status} onCompress={compress} result={result} />}
+                        {activeTool === 'remove' && <RemovePagesTool pdfs={pdfs} status={status} onRemove={removePages} result={result} onPreview={handlePreviewTrigger} />}
+                      </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+
+            {/* Live Preview Pane */}
+            <motion.div 
+               initial={{ opacity: 0, x: 20 }}
+               animate={{ opacity: 1, x: 0 }}
+               className="w-full xl:w-[450px] 2xl:w-[550px] min-h-[500px] xl:h-[calc(100vh-160px)] sticky top-24 bg-muted/30 border border-border rounded-2xl overflow-hidden flex flex-col"
+            >
+               <div className="px-4 py-3 border-b border-border bg-background/50 backdrop-blur-sm flex justify-between items-center">
+                 <h3 className="text-sm font-semibold">Live Preview</h3>
+                 {previewUrl && (
+                    <div className="flex items-center gap-2">
+                       <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                       <span className="text-xs text-muted-foreground">Active</span>
+                    </div>
                  )}
-               </AnimatePresence>
-             </div>
+               </div>
+               
+               <div className="flex-1 relative bg-muted/10">
+                 {previewUrl ? (
+                   <iframe src={previewUrl} className="absolute inset-0 w-full h-full border-none bg-white"/>
+                 ) : (
+                   <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center text-muted-foreground space-y-4">
+                     <div className="p-4 rounded-full bg-muted border border-border">
+                       <EyeOff className="w-8 h-8 opacity-50" />
+                     </div>
+                     <div className="space-y-1">
+                       <p className="font-medium text-foreground">No file selected</p>
+                       <p className="text-sm">Select or click an eye icon on a PDF from your tool workspace to preview it here instantly.</p>
+                     </div>
+                   </div>
+                 )}
+               </div>
+            </motion.div>
+
           </div>
         </main>
       </div>

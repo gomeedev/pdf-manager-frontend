@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { OperationStatus } from '@/hooks/useOperations'
 import { motion } from 'framer-motion'
-import { Loader2, CheckCircle2, Download, AlertCircle } from 'lucide-react'
+import { Loader2, CheckCircle2, Download, AlertCircle, Eye } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 interface RemovePagesToolProps {
@@ -14,9 +14,10 @@ interface RemovePagesToolProps {
   status: OperationStatus
   onRemove: (fileId: string, pagesToRemove: number[], outputFilename: string) => Promise<any>
   result: any
+  onPreview: (storagePath: string) => void
 }
 
-export function RemovePagesTool({ pdfs, status, onRemove, result }: RemovePagesToolProps) {
+export function RemovePagesTool({ pdfs, status, onRemove, result, onPreview }: RemovePagesToolProps) {
   const [selectedId, setSelectedId] = useState<string[]>([])
   const [pagesStr, setPagesStr] = useState('')
   const [outputFilename, setOutputFilename] = useState('reduced_document.pdf')
@@ -55,6 +56,18 @@ export function RemovePagesTool({ pdfs, status, onRemove, result }: RemovePagesT
             onSelect={setSelectedId} 
             multiSelect={false}
           />
+          {selectedId.length > 0 && (
+            <div className="pt-2">
+              <Button 
+                variant="outline" 
+                className="w-full h-10 gap-2 border-foreground/20 hover:bg-muted" 
+                onClick={(e) => { e.preventDefault(); const p = pdfs.find(p=>p.id===selectedId[0]); if(p) onPreview(p.storage_path); }}
+              >
+                <Eye className="w-4 h-4" />
+                Preview File
+              </Button>
+            </div>
+          )}
         </div>
 
         <div className="space-y-8">

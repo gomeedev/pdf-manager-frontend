@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { OperationStatus } from '@/hooks/useOperations'
 import { motion, Reorder } from 'framer-motion'
-import { Loader2, AlertCircle, FileText, CheckCircle2, Download } from 'lucide-react'
+import { Loader2, AlertCircle, FileText, CheckCircle2, Download, Eye } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 interface MergeToolProps {
@@ -14,9 +14,10 @@ interface MergeToolProps {
   status: OperationStatus
   onMerge: (fileIds: string[], outputFilename: string) => Promise<any>
   result: any
+  onPreview: (storagePath: string) => void
 }
 
-export function MergeTool({ pdfs, status, onMerge, result }: MergeToolProps) {
+export function MergeTool({ pdfs, status, onMerge, result, onPreview }: MergeToolProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [outputFilename, setOutputFilename] = useState('merged_document.pdf')
   const { downloadPdf } = usePDFs()
@@ -70,10 +71,17 @@ export function MergeTool({ pdfs, status, onMerge, result }: MergeToolProps) {
                       value={pdf}
                       className="flex items-center gap-3 p-3 bg-background border border-border rounded-xl cursor-grab active:cursor-grabbing hover:border-foreground/20 transition-colors shadow-sm"
                     >
-                      <div className="p-1.5 bg-muted rounded-md text-muted-foreground">
+                      <div className="p-1.5 bg-muted rounded-md text-muted-foreground flex-shrink-0">
                         <FileText className="w-4 h-4" />
                       </div>
                       <span className="text-sm font-medium truncate flex-1">{pdf.filename}</span>
+                      <button 
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); onPreview(pdf.storage_path); }} 
+                        className="p-1.5 hover:bg-muted rounded text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
                     </Reorder.Item>
                   ))}
                 </Reorder.Group>
