@@ -14,7 +14,7 @@ interface RemovePagesToolProps {
   status: OperationStatus
   onRemove: (fileId: string, pagesToRemove: number[], outputFilename: string) => Promise<any>
   result: any
-  onPreview: (storagePath: string) => void
+  onPreview: (storagePath: string) => Promise<void>
 }
 
 export function RemovePagesTool({ pdfs, status, onRemove, result, onPreview }: RemovePagesToolProps) {
@@ -61,7 +61,7 @@ export function RemovePagesTool({ pdfs, status, onRemove, result, onPreview }: R
               <Button 
                 variant="outline" 
                 className="w-full h-10 gap-2 border-foreground/20 hover:bg-muted" 
-                onClick={(e) => { e.preventDefault(); const p = pdfs.find(p=>p.id===selectedId[0]); if(p) onPreview(p.storage_path); }}
+                onClick={async (e) => { e.preventDefault(); const p = pdfs.find(p=>p.id===selectedId[0]); if(p) await onPreview(p.storage_path); }}
               >
                 <Eye className="w-4 h-4" />
                 Preview File

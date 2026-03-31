@@ -14,7 +14,7 @@ interface MergeToolProps {
   status: OperationStatus
   onMerge: (fileIds: string[], outputFilename: string) => Promise<any>
   result: any
-  onPreview: (storagePath: string) => void
+  onPreview: (storagePath: string) => Promise<void>
 }
 
 export function MergeTool({ pdfs, status, onMerge, result, onPreview }: MergeToolProps) {
@@ -77,7 +77,7 @@ export function MergeTool({ pdfs, status, onMerge, result, onPreview }: MergeToo
                       <span className="text-sm font-medium truncate flex-1">{pdf.filename}</span>
                       <button 
                         type="button"
-                        onClick={(e) => { e.stopPropagation(); onPreview(pdf.storage_path); }} 
+                        onClick={async (e) => { e.stopPropagation(); await onPreview(pdf.storage_path); }} 
                         className="p-1.5 hover:bg-muted rounded text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
                       >
                         <Eye className="w-4 h-4" />

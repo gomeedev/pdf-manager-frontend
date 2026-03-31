@@ -20,8 +20,8 @@ export function OperationsPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
   const handlePreviewTrigger = async (storagePath: string) => {
-    const url = await previewPdf(storagePath) as string | null | void
-    if (url) setPreviewUrl(url as string)
+    const url = await previewPdf(storagePath)
+    if (url) setPreviewUrl(url)
   }
 
   const tools = [

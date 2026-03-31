@@ -14,7 +14,7 @@ interface SplitToolProps {
   status: OperationStatus
   onSplit: (fileId: string, pages: number[], outputFilename: string) => Promise<any>
   result: any
-  onPreview: (storagePath: string) => void
+  onPreview: (storagePath: string) => Promise<void>
 }
 
 export function SplitTool({ pdfs, status, onSplit, result, onPreview }: SplitToolProps) {
@@ -61,7 +61,7 @@ export function SplitTool({ pdfs, status, onSplit, result, onPreview }: SplitToo
               <Button 
                 variant="outline" 
                 className="w-full h-10 gap-2 border-foreground/20 hover:bg-muted" 
-                onClick={(e) => { e.preventDefault(); const p = pdfs.find(p=>p.id===selectedId[0]); if(p) onPreview(p.storage_path); }}
+                onClick={async (e) => { e.preventDefault(); const p = pdfs.find(p=>p.id===selectedId[0]); if(p) await onPreview(p.storage_path); }}
               >
                 <Eye className="w-4 h-4" />
                 Preview File

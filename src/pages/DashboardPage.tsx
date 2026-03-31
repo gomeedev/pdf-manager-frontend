@@ -98,9 +98,11 @@ export function DashboardPage() {
           >
             <div className="flex items-center justify-between">
               <h2 className="heading-md">Recent Files</h2>
-              <span className="text-sm font-medium bg-muted px-3 py-1 rounded-full text-foreground">
-                {pdfs.length} files
-              </span>
+              {!loading && (
+                <span className="text-sm font-medium bg-muted px-3 py-1 rounded-full text-foreground">
+                  {pdfs.length} {pdfs.length === 1 ? 'file' : 'files'}
+                </span>
+              )}
             </div>
 
             <PDFList
