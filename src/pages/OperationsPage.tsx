@@ -55,6 +55,16 @@ export function OperationsPage() {
                 <span className="font-semibold text-foreground tracking-tight">PDF Operations</span>
               </div>
             </div>
+            
+            <div className="hidden md:flex items-center gap-4">
+              <div className="flex items-center gap-1 mr-4">
+                <Link to="/dashboard/agent">
+                  <button className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-md hover:bg-muted">
+                    AI Agent
+                  </button>
+                </Link>
+              </div>
+            </div>
           </div>
         </nav>
 
