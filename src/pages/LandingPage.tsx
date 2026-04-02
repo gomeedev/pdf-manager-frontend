@@ -117,52 +117,54 @@ export function LandingPage() {
             />
           </div>
 
-          <AnimatePresence>
-            {heroTypingComplete && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className="flex flex-col items-center gap-8"
-              >
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Link to="/register">
+          <div className="h-[200px] w-full flex justify-center">
+            <AnimatePresence>
+              {heroTypingComplete && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
+                  className="flex flex-col items-center gap-8"
+                >
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Link to="/register">
+                      <Button
+                        size="lg"
+                        className="h-12 px-8 text-base bg-foreground text-background hover:bg-foreground/90 rounded-full shadow-lg"
+                      >
+                        Start processing now
+                      </Button>
+                    </Link>
                     <Button
                       size="lg"
-                      className="h-12 px-8 text-base bg-foreground text-background hover:bg-foreground/90 rounded-full shadow-lg"
+                      variant="outline"
+                      className="h-12 px-8 text-base rounded-full"
+                      onClick={() =>
+                        window.scrollTo({
+                          top: window.innerHeight,
+                          behavior: "smooth",
+                        })
+                      }
                     >
-                      Start processing now
+                      See how it works <Play className="w-4 h-4 ml-2" />
                     </Button>
-                  </Link>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="h-12 px-8 text-base rounded-full"
-                    onClick={() =>
-                      window.scrollTo({
-                        top: window.innerHeight,
-                        behavior: "smooth",
-                      })
-                    }
-                  >
-                    See how it works <Play className="w-4 h-4 ml-2" />
-                  </Button>
-                </div>
+                  </div>
 
-                <motion.div
-                  animate={{ y: [0, 8, 0] }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="mt-12 opacity-40"
-                >
-                  <ArrowDown className="w-5 h-5 mx-auto" />
+                  <motion.div
+                    animate={{ y: [0, 8, 0] }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                    className="mt-12 opacity-40"
+                  >
+                    <ArrowDown className="w-5 h-5 mx-auto" />
+                  </motion.div>
                 </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+              )}
+            </AnimatePresence>
+          </div>
         </main>
 
         {/* Interactive Video Section */}
