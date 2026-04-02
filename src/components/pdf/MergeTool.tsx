@@ -33,7 +33,7 @@ export function MergeTool({ pdfs, status, onMerge, result, onPreview }: MergeToo
   }
 
   // Sorting based on selected order
-  const selectedPdfs = selectedIds.map(id => pdfs.find(p => p.id === id)!)
+  const selectedPdfs = selectedIds.map(id => pdfs.find(p => p.id === id)).filter(Boolean) as PDFFile[]
 
   const handleReorder = (newOrder: PDFFile[]) => {
     setSelectedIds(newOrder.map(pdf => pdf.id))
@@ -42,10 +42,14 @@ export function MergeTool({ pdfs, status, onMerge, result, onPreview }: MergeToo
   const handleExecute = async (e: React.FormEvent) => {
     e.preventDefault()
     if (selectedIds.length < 2) return
-    const data = await onMerge(selectedIds, outputFilename.endsWith('.pdf') ? outputFilename : `${outputFilename}.pdf`)
-    // Auto-preview the merged result in the Live Preview pane
-    if (data?.data?.storage_path) {
-      await onPreview(data.data.storage_path)
+    try {
+      const data = await onMerge(selectedIds, outputFilename.endsWith('.pdf') ? outputFilename : `${outputFilename}.pdf`)
+      // Auto-preview the merged result in the Live Preview pane
+      if (data?.data?.storage_path) {
+        await onPreview(data.data.storage_path)
+      }
+    } catch (err) {
+      console.error('Merge operation failed:', err)
     }
   }
 

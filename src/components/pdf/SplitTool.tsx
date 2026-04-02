@@ -42,7 +42,11 @@ export function SplitTool({ pdfs, status, onSplit, result, onPreview }: SplitToo
     
     if (pages.length === 0) return
 
-    await onSplit(selectedId[0], pages, outputFilename.endsWith('.pdf') ? outputFilename : `${outputFilename}.pdf`)
+    try {
+      await onSplit(selectedId[0], pages, outputFilename.endsWith('.pdf') ? outputFilename : `${outputFilename}.pdf`)
+    } catch (err) {
+      console.error('Split operation failed:', err)
+    }
   }
 
   return (

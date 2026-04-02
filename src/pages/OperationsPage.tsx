@@ -147,7 +147,7 @@ export function OperationsPage() {
                       >
                         {activeTool === 'merge' && <MergeTool pdfs={pdfs} status={status} onMerge={merge} result={result} onPreview={handlePreviewTrigger} />}
                         {activeTool === 'split' && <SplitTool pdfs={pdfs} status={status} onSplit={split} result={result} onPreview={handlePreviewTrigger} />}
-                        {activeTool === 'compress' && <CompressTool pdfs={pdfs} status={status} onCompress={compress} result={result} />}
+                        {activeTool === 'compress' && <CompressTool pdfs={pdfs} status={status} onCompress={compress} result={result} onPreview={handlePreviewTrigger} />}
                         {activeTool === 'remove' && <RemovePagesTool pdfs={pdfs} status={status} onRemove={removePages} result={result} onPreview={handlePreviewTrigger} />}
                       </motion.div>
                   )}

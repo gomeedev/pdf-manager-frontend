@@ -1,251 +1,256 @@
-import { useRef } from 'react'
-import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { PageTransition } from '@/components/animations/PageTransition'
 import { Particles } from '@/components/animations/Particles'
-import { FileStack, Zap, Shield, Search, Play, ArrowDown } from 'lucide-react'
+import { FileStack, Play, ArrowDown, MoveRight } from 'lucide-react'
+
+// Main Typewriter component
+const TypewriterText = ({ text, onComplete }: { text: string, onComplete: () => void }) => {
+  const [displayText, setDisplayText] = useState('')
+  const [isTyping, setIsTyping] = useState(true)
+
+  useEffect(() => {
+    let currentText = ''
+    let currentIndex = 0
+    // Total time is 3 seconds (3000ms). Adjust interval speed accordingly.
+    const intervalTime = 3000 / text.length
+
+    const timer = setInterval(() => {
+      if (currentIndex < text.length) {
+        currentText += text[currentIndex]
+        setDisplayText(currentText)
+        currentIndex++
+      } else {
+        clearInterval(timer)
+        setIsTyping(false)
+        onComplete()
+      }
+    }, intervalTime)
+
+    return () => clearInterval(timer)
+  }, [text, onComplete])
+
+  return (
+    <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-[1.1] text-balance">
+      {displayText}
+      {isTyping && <motion.span animate={{ opacity: [1, 0, 1] }} transition={{ repeat: Infinity, duration: 0.6 }} className="inline-block w-1 bg-foreground h-12 ml-1 align-middle" />}
+    </h1>
+  )
+}
 
 export function LandingPage() {
-  const featuresRef = useRef<HTMLDivElement>(null)
-
-  const scrollToFeatures = () => {
-    featuresRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
+  const [heroTypingComplete, setHeroTypingComplete] = useState(false)
+  
+  // Use scroll for video parallax
+  const { scrollY } = useScroll()
+  // As we scroll from 0 down to 800px, the video scales from 0.8 to 1.1
+  const videoScale = useTransform(scrollY, [0, 800], [0.85, 1.05])
+  const videoOpacity = useTransform(scrollY, [0, 500], [0.6, 1])
 
   return (
     <PageTransition>
-      <div className="relative min-h-screen bg-background overflow-hidden flex flex-col">
+      <div className="relative min-h-screen bg-background overflow-hidden flex flex-col font-sans">
         <Particles />
 
         {/* Navigation */}
-        <nav className="relative z-20 w-full max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <nav className="relative z-50 w-full max-w-7xl mx-auto px-6 h-20 flex items-center justify-between mix-blend-difference text-white">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-foreground to-foreground/70 rounded-lg flex items-center justify-center">
-              <FileStack className="w-5 h-5 text-background" />
+            <div className="w-8 h-8 flex items-center justify-center">
+              <FileStack className="w-6 h-6" />
             </div>
-            <span className="font-semibold text-foreground tracking-tight">PDF Manager</span>
+            <span className="font-semibold tracking-tight text-lg">PDF Manager</span>
           </div>
           <div className="flex items-center gap-4">
             <Link to="/login">
-              <Button variant="ghost" size="sm">Log in</Button>
+              <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 hover:text-white">Log in</Button>
             </Link>
             <Link to="/register">
-              <Button size="sm">Get Started</Button>
+              <Button size="sm" className="bg-white text-black hover:bg-white/90">Get Started</Button>
             </Link>
           </div>
         </nav>
 
         {/* Hero Section */}
-        <main className="relative z-20 flex-1 flex flex-col items-center justify-center px-6 text-center space-y-12 max-w-5xl mx-auto py-24">
-          {/* Gradient blur background */}
-          <div className="absolute inset-0 -z-10">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-foreground/5 via-transparent to-foreground/5 rounded-full blur-3xl" />
+        <main className="relative z-20 flex-1 flex flex-col items-center justify-center px-6 text-center space-y-12 max-w-5xl mx-auto pt-32 pb-48">
+          
+          <div className="min-h-[160px] flex items-center justify-center">
+            <TypewriterText 
+              text="Experience liftoff with the next-generation PDF IDE" 
+              onComplete={() => setHeroTypingComplete(true)} 
+            />
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="space-y-6"
-          >
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-[1.2] text-balance">
-              The future of PDF management is{' '}
-              <span className="bg-gradient-to-r from-foreground via-foreground to-foreground/60 bg-clip-text text-transparent">
-                intelligent
-              </span>
-            </h1>
-            <p className="text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto text-balance font-light leading-relaxed">
-              Experience the next generation of document handling. Powered by AI, designed for speed, and secured with industry-leading standards.
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-col sm:flex-row gap-4 pt-4"
-          >
-            <Link to="/register">
-              <Button size="lg" className="h-14 px-8 text-lg bg-foreground text-background hover:bg-foreground/90">
-                Start processing now
-              </Button>
-            </Link>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="h-14 px-8 text-lg"
-              onClick={scrollToFeatures}
-            >
-              Explore features
-            </Button>
-          </motion.div>
-
-          {/* Scroll indicator */}
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="absolute bottom-12 left-1/2 -translate-x-1/2"
-          >
-            <ArrowDown className="w-6 h-6 text-foreground/40" />
-          </motion.div>
-        </main>
-
-        {/* Features Section */}
-        <section 
-          ref={featuresRef}
-          className="relative z-20 w-full py-24 border-t border-foreground/10"
-        >
-          <div className="max-w-7xl mx-auto px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true, margin: '-100px' }}
-              className="text-center mb-16"
-            >
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-                Powerful capabilities
-              </h2>
-              <p className="text-lg text-foreground/60">Everything you need to master your PDF workflow</p>
-            </motion.div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                {
-                  icon: <Zap className="w-6 h-6" />,
-                  title: 'AI-Powered',
-                  description: 'Our ReAct agent understands your natural language instructions to merge, split, and compress files effortlessly.',
-                },
-                {
-                  icon: <Shield className="w-6 h-6" />,
-                  title: 'Private & Secure',
-                  description: 'Industry-standard RLS and encrypted storage ensure your sensitive documents never leave your control.',
-                },
-                {
-                  icon: <Search className="w-6 h-6" />,
-                  title: 'Smart Processing',
-                  description: 'Instant operations on your PDFs with real-time feedback and download your results immediately.',
-                },
-              ].map((feature, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  viewport={{ once: true, margin: '-100px' }}
-                >
-                  <div className="p-6 rounded-2xl border border-foreground/10 hover:border-foreground/30 bg-gradient-to-br from-background via-background to-background/50 backdrop-blur-sm hover:bg-background/80 transition-all duration-300 group">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-foreground/10 to-foreground/5 flex items-center justify-center text-foreground group-hover:from-foreground/20 group-hover:to-foreground/10 transition-all duration-300">
-                      {feature.icon}
-                    </div>
-                    <h3 className="text-xl font-semibold tracking-tight mt-4 mb-2">{feature.title}</h3>
-                    <p className="text-foreground/60 leading-relaxed">{feature.description}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Demo Section */}
-        <section className="relative z-20 w-full py-24 border-t border-foreground/10">
-          <div className="max-w-5xl mx-auto px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true, margin: '-100px' }}
-              className="text-center mb-12"
-            >
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-                See it in action
-              </h2>
-              <p className="text-lg text-foreground/60">Watch how our AI agent simplifies PDF management</p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7 }}
-              viewport={{ once: true, margin: '-100px' }}
-              className="relative rounded-2xl overflow-hidden border border-foreground/10 bg-gradient-to-br from-foreground/5 to-foreground/0 backdrop-blur-sm p-1"
-            >
-              {/* Gradient border effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
-              {/* Video placeholder */}
-              <div className="relative bg-gradient-to-br from-foreground/10 via-foreground/5 to-transparent aspect-video rounded-xl flex flex-col items-center justify-center group cursor-pointer hover:from-foreground/15 transition-all duration-300">
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-transparent via-black/0 to-black/10" />
+          <AnimatePresence>
+            {heroTypingComplete && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="flex flex-col items-center gap-8"
+              >
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link to="/register">
+                    <Button size="lg" className="h-12 px-8 text-base bg-foreground text-background hover:bg-foreground/90 rounded-full shadow-lg">
+                      Start processing now
+                    </Button>
+                  </Link>
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="h-12 px-8 text-base rounded-full"
+                    onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
+                  >
+                    Watch the demo <Play className="w-4 h-4 ml-2" />
+                  </Button>
+                </div>
                 
                 <motion.div
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="relative z-10 w-16 h-16 rounded-full bg-foreground/20 flex items-center justify-center backdrop-blur-sm border border-foreground/30 group-hover:bg-foreground/30 group-hover:border-foreground/50 transition-all duration-300"
+                  animate={{ y: [0, 8, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  className="mt-12 opacity-40"
                 >
-                  <Play className="w-8 h-8 text-foreground fill-foreground" />
+                  <ArrowDown className="w-5 h-5 mx-auto" />
                 </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </main>
 
-                <p className="relative z-10 mt-6 text-foreground/60 font-medium">Demo Video</p>
-                <p className="relative z-10 text-sm text-foreground/40 mt-2">Coming soon - See the agent in action</p>
-              </div>
-            </motion.div>
+        {/* Interactive Video Section */}
+        <section className="relative z-10 w-full min-h-screen flex items-center justify-center -mt-32 pb-32">
+           <motion.div 
+             style={{ scale: videoScale, opacity: videoOpacity }}
+             className="w-full max-w-6xl mx-auto px-6"
+           >
+             <div className="relative aspect-video rounded-3xl overflow-hidden shadow-2xl bg-black border border-white/10 ring-1 ring-black/5">
+                <video 
+                  src="/demo_video.mp4" 
+                  autoPlay 
+                  loop 
+                  muted 
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
+             </div>
+           </motion.div>
+        </section>
 
-            {/* Demo features list */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-              {[
-                { title: 'Natural Language Commands', desc: 'Just describe what you want to do' },
-                { title: 'Real-time Processing', desc: 'Instant results without delays' },
-                { title: 'One-click Download', desc: 'Get your files immediately' },
-              ].map((item, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  viewport={{ once: true }}
-                  className="flex items-start gap-3 p-4"
-                >
-                  <div className="w-2 h-2 rounded-full bg-foreground mt-2 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-foreground">{item.title}</h4>
-                    <p className="text-sm text-foreground/60">{item.desc}</p>
-                  </div>
-                </motion.div>
-              ))}
+        {/* Dynamic Image/Text Section 1 */}
+        <section className="relative z-20 w-full py-32 bg-background">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="relative aspect-video rounded-3xl overflow-hidden shadow-xl"
+              >
+                <img src="/demo_image-1.png" alt="PDF Architecture" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 ring-1 ring-inset ring-black/10 rounded-3xl" />
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                className="space-y-6 flex flex-col justify-center"
+              >
+                <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
+                  AI Capabilities
+                </div>
+                <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
+                  Chat with your documents seamlessly
+                </h2>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  Our integrated ReAct AI Agent understands exactly what you need. From merging large operational datasets to splitting invoices, just ask naturally.
+                </p>
+                <div>
+                  <Button variant="link" className="px-0 flex items-center group">
+                    Learn more <MoveRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </div>
+              </motion.div>
             </div>
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="relative z-20 w-full py-20 border-t border-foreground/10">
-          <div className="max-w-4xl mx-auto px-6 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="space-y-6"
-            >
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-                Ready to transform your workflow?
-              </h2>
-              <p className="text-lg text-foreground/60">
-                Join thousands of users who are already using PDF Manager to streamline their document operations.
-              </p>
-              <Link to="/register">
-                <Button size="lg" className="h-14 px-8 text-lg bg-foreground text-background hover:bg-foreground/90">
-                  Start for free today
-                </Button>
-              </Link>
-            </motion.div>
+        {/* Dynamic Image/Text Section 2 */}
+        <section className="relative z-20 w-full py-32 bg-muted/30">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                className="space-y-6 flex flex-col justify-center order-2 md:order-1"
+              >
+                <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
+                  Extreme Performance
+                </div>
+                <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
+                  State-of-the-art Visual Processing
+                </h2>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  Experience a beautifully curated workspace. With advanced telemetry and unparalleled fluidity, you can manage hundreds of documents without a single hiccup.
+                </p>
+                <div className="grid grid-cols-2 gap-6 pt-4">
+                  <div>
+                    <h4 className="font-semibold text-foreground text-xl">100%</h4>
+                    <p className="text-sm text-foreground/60">Serverless uptime</p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-foreground text-xl">&lt; 10ms</h4>
+                    <p className="text-sm text-foreground/60">Interaction latency</p>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-xl order-1 md:order-2"
+              >
+                <img src="/demo_image-2.png" alt="PDF Visual Workspace" className="w-full h-full object-cover object-left-top" />
+                <div className="absolute inset-0 ring-1 ring-inset ring-black/10 rounded-3xl" />
+              </motion.div>
+            </div>
           </div>
+        </section>
+
+        {/* Call to action */}
+        <section className="relative z-20 w-full py-32 bg-foreground text-background text-center flex flex-col items-center px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="space-y-8 max-w-3xl mx-auto"
+          >
+            <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-white">
+              Ready for the next step?
+            </h2>
+            <p className="text-lg text-background/80 leading-relaxed font-light">
+              Join the ecosystem built for modern PDF intelligence. Enhance your productivity and experience limitless workflow management.
+            </p>
+            <Link to="/register">
+              <Button size="lg" className="h-14 px-10 text-lg sm:w-auto bg-white text-black hover:bg-white/90 rounded-full mt-4">
+                Enter Workspace
+              </Button>
+            </Link>
+          </motion.div>
         </section>
 
         {/* Footer */}
-        <footer className="relative z-20 w-full border-t border-foreground/10 py-12">
-          <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8 text-sm text-foreground/60">
-            <span>© 2026 PDF Manager.</span>
+        <footer className="relative z-20 w-full py-12 bg-background border-t border-border">
+          <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8 text-sm text-muted-foreground">
+            <span className="font-medium text-foreground tracking-tight">PDF Manager © 2026.</span>
             <div className="flex gap-8">
               <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
               <a href="#" className="hover:text-foreground transition-colors">Terms</a>
