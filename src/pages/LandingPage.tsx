@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   motion,
   useScroll,
@@ -59,12 +59,18 @@ const TypewriterText = ({
 
 export function LandingPage() {
   const [heroTypingComplete, setHeroTypingComplete] = useState(false);
+  const videoSectionRef = useRef<HTMLDivElement>(null);
 
-  // Use scroll for video parallax
-  const { scrollY } = useScroll();
-  // As we scroll from 0 down to 800px, the video scales from 0.8 to 1.1
-  const videoScale = useTransform(scrollY, [0, 800], [0.85, 1.05]);
-  const videoOpacity = useTransform(scrollY, [0, 500], [0.6, 1]);
+  // Use scroll for video parallax relative to the section's viewport intersection
+  const { scrollYProgress } = useScroll({
+    target: videoSectionRef,
+    offset: ["start end", "center center"]
+  });
+  
+  // As the section enters the screen from the bottom ("start end") 
+  // until it reaches the center ("center center"), scale from 0.85 to 1.2
+  const videoScale = useTransform(scrollYProgress, [0, 1], [0.85, 1.2]);
+  const videoOpacity = useTransform(scrollYProgress, [0, 1], [0.6, 1]);
 
   return (
     <PageTransition>
@@ -160,7 +166,7 @@ export function LandingPage() {
         </main>
 
         {/* Interactive Video Section */}
-        <section className="relative z-10 w-full min-h-screen flex items-center justify-center -mt-32 pb-32">
+        <section ref={videoSectionRef} className="relative z-10 w-full min-h-screen flex items-center justify-center -mt-32 pb-32">
           <motion.div
             style={{ scale: videoScale, opacity: videoOpacity }}
             className="w-full max-w-6xl mx-auto px-6"
