@@ -1,53 +1,70 @@
-import { useEffect, useState } from 'react'
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
-import { Link } from 'react-router-dom'
-import { Button } from '@/components/ui/button'
-import { PageTransition } from '@/components/animations/PageTransition'
-import { Particles } from '@/components/animations/Particles'
-import { FileStack, Play, ArrowDown, MoveRight } from 'lucide-react'
+import { useEffect, useState } from "react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  AnimatePresence,
+} from "framer-motion";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { PageTransition } from "@/components/animations/PageTransition";
+import { Particles } from "@/components/animations/Particles";
+import { FileStack, Play, ArrowDown, MoveRight } from "lucide-react";
 
 // Main Typewriter component
-const TypewriterText = ({ text, onComplete }: { text: string, onComplete: () => void }) => {
-  const [displayText, setDisplayText] = useState('')
-  const [isTyping, setIsTyping] = useState(true)
+const TypewriterText = ({
+  text,
+  onComplete,
+}: {
+  text: string;
+  onComplete: () => void;
+}) => {
+  const [displayText, setDisplayText] = useState("");
+  const [isTyping, setIsTyping] = useState(true);
 
   useEffect(() => {
-    let currentText = ''
-    let currentIndex = 0
+    let currentText = "";
+    let currentIndex = 0;
     // Total time is 3 seconds (3000ms). Adjust interval speed accordingly.
-    const intervalTime = 3000 / text.length
+    const intervalTime = 3000 / text.length;
 
     const timer = setInterval(() => {
       if (currentIndex < text.length) {
-        currentText += text[currentIndex]
-        setDisplayText(currentText)
-        currentIndex++
+        currentText += text[currentIndex];
+        setDisplayText(currentText);
+        currentIndex++;
       } else {
-        clearInterval(timer)
-        setIsTyping(false)
-        onComplete()
+        clearInterval(timer);
+        setIsTyping(false);
+        onComplete();
       }
-    }, intervalTime)
+    }, intervalTime);
 
-    return () => clearInterval(timer)
-  }, [text, onComplete])
+    return () => clearInterval(timer);
+  }, [text]); // Removed onComplete from dependencies to prevent infinite re-animation on re-renders
 
   return (
     <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-[1.1] text-balance">
       {displayText}
-      {isTyping && <motion.span animate={{ opacity: [1, 0, 1] }} transition={{ repeat: Infinity, duration: 0.6 }} className="inline-block w-1 bg-foreground h-12 ml-1 align-middle" />}
+      {isTyping && (
+        <motion.span
+          animate={{ opacity: [1, 0, 1] }}
+          transition={{ repeat: Infinity, duration: 0.6 }}
+          className="inline-block w-1 bg-foreground h-12 ml-1 align-middle"
+        />
+      )}
     </h1>
-  )
-}
+  );
+};
 
 export function LandingPage() {
-  const [heroTypingComplete, setHeroTypingComplete] = useState(false)
-  
+  const [heroTypingComplete, setHeroTypingComplete] = useState(false);
+
   // Use scroll for video parallax
-  const { scrollY } = useScroll()
+  const { scrollY } = useScroll();
   // As we scroll from 0 down to 800px, the video scales from 0.8 to 1.1
-  const videoScale = useTransform(scrollY, [0, 800], [0.85, 1.05])
-  const videoOpacity = useTransform(scrollY, [0, 500], [0.6, 1])
+  const videoScale = useTransform(scrollY, [0, 800], [0.85, 1.05]);
+  const videoOpacity = useTransform(scrollY, [0, 500], [0.6, 1]);
 
   return (
     <PageTransition>
@@ -60,25 +77,37 @@ export function LandingPage() {
             <div className="w-8 h-8 flex items-center justify-center">
               <FileStack className="w-6 h-6" />
             </div>
-            <span className="font-semibold tracking-tight text-lg">PDF Manager</span>
+            <span className="font-semibold tracking-tight text-lg">
+              PDF Manager
+            </span>
           </div>
           <div className="flex items-center gap-4">
             <Link to="/login">
-              <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 hover:text-white">Log in</Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/20 hover:text-white"
+              >
+                Log in
+              </Button>
             </Link>
             <Link to="/register">
-              <Button size="sm" className="bg-white text-black hover:bg-white/90">Get Started</Button>
+              <Button
+                size="sm"
+                className="bg-white text-black hover:bg-white/90"
+              >
+                Get Started
+              </Button>
             </Link>
           </div>
         </nav>
 
         {/* Hero Section */}
         <main className="relative z-20 flex-1 flex flex-col items-center justify-center px-6 text-center space-y-12 max-w-5xl mx-auto pt-32 pb-48">
-          
           <div className="min-h-[160px] flex items-center justify-center">
-            <TypewriterText 
-              text="Experience liftoff with the next-generation PDF IDE" 
-              onComplete={() => setHeroTypingComplete(true)} 
+            <TypewriterText
+              text="Your PDFs, managed by AI. Just ask"
+              onComplete={() => setHeroTypingComplete(true)}
             />
           </div>
 
@@ -92,23 +121,35 @@ export function LandingPage() {
               >
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Link to="/register">
-                    <Button size="lg" className="h-12 px-8 text-base bg-foreground text-background hover:bg-foreground/90 rounded-full shadow-lg">
+                    <Button
+                      size="lg"
+                      className="h-12 px-8 text-base bg-foreground text-background hover:bg-foreground/90 rounded-full shadow-lg"
+                    >
                       Start processing now
                     </Button>
                   </Link>
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
+                  <Button
+                    size="lg"
+                    variant="outline"
                     className="h-12 px-8 text-base rounded-full"
-                    onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
+                    onClick={() =>
+                      window.scrollTo({
+                        top: window.innerHeight,
+                        behavior: "smooth",
+                      })
+                    }
                   >
-                    Watch the demo <Play className="w-4 h-4 ml-2" />
+                    See how it works <Play className="w-4 h-4 ml-2" />
                   </Button>
                 </div>
-                
+
                 <motion.div
                   animate={{ y: [0, 8, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
                   className="mt-12 opacity-40"
                 >
                   <ArrowDown className="w-5 h-5 mx-auto" />
@@ -120,21 +161,21 @@ export function LandingPage() {
 
         {/* Interactive Video Section */}
         <section className="relative z-10 w-full min-h-screen flex items-center justify-center -mt-32 pb-32">
-           <motion.div 
-             style={{ scale: videoScale, opacity: videoOpacity }}
-             className="w-full max-w-6xl mx-auto px-6"
-           >
-             <div className="relative aspect-video rounded-3xl overflow-hidden shadow-2xl bg-black border border-white/10 ring-1 ring-black/5">
-                <video 
-                  src="/demo_video.mp4" 
-                  autoPlay 
-                  loop 
-                  muted 
-                  playsInline
-                  className="w-full h-full object-cover"
-                />
-             </div>
-           </motion.div>
+          <motion.div
+            style={{ scale: videoScale, opacity: videoOpacity }}
+            className="w-full max-w-6xl mx-auto px-6"
+          >
+            <div className="relative aspect-video rounded-3xl overflow-hidden shadow-2xl bg-black border border-white/10 ring-1 ring-black/5">
+              <video
+                src="/demo_video.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </motion.div>
         </section>
 
         {/* Dynamic Image/Text Section 1 */}
@@ -148,10 +189,14 @@ export function LandingPage() {
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 className="relative aspect-video rounded-3xl overflow-hidden shadow-xl"
               >
-                <img src="/demo_image-1.png" alt="PDF Architecture" className="w-full h-full object-cover" />
+                <img
+                  src="/demo_image-1.png"
+                  alt="PDF Architecture"
+                  className="w-full h-full object-cover"
+                />
                 <div className="absolute inset-0 ring-1 ring-inset ring-black/10 rounded-3xl" />
               </motion.div>
-              
+
               <motion.div
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -160,17 +205,23 @@ export function LandingPage() {
                 className="space-y-6 flex flex-col justify-center"
               >
                 <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                  AI Capabilities
+                  Powered by AI
                 </div>
                 <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-                  Chat with your documents seamlessly
+                  Tell it what to do. It handles the rest.
                 </h2>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  Our integrated ReAct AI Agent understands exactly what you need. From merging large operational datasets to splitting invoices, just ask naturally.
+                  Just type what you need - merge these files, remove page 3,
+                  compress this document - and PDF Manager does it for you. No
+                  tutorials, no menus, no frustration.
                 </p>
                 <div>
-                  <Button variant="link" className="px-0 flex items-center group">
-                    Learn more <MoveRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  <Button
+                    variant="link"
+                    className="px-0 flex items-center group"
+                  >
+                    Learn more{" "}
+                    <MoveRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
               </motion.div>
@@ -193,19 +244,29 @@ export function LandingPage() {
                   Extreme Performance
                 </div>
                 <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-                  State-of-the-art Visual Processing
+                  Fast, private, and always yours.
                 </h2>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  Experience a beautifully curated workspace. With advanced telemetry and unparalleled fluidity, you can manage hundreds of documents without a single hiccup.
+                  Your files are processed securely and never shared. Upload,
+                  edit, and download in seconds - whether you have one document
+                  or a hundred.
                 </p>
                 <div className="grid grid-cols-2 gap-6 pt-4">
                   <div>
-                    <h4 className="font-semibold text-foreground text-xl">100%</h4>
-                    <p className="text-sm text-foreground/60">Serverless uptime</p>
+                    <h4 className="font-semibold text-foreground text-xl">
+                      100% Private
+                    </h4>
+                    <p className="text-sm text-foreground/60">
+                      Your files, your control
+                    </p>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-foreground text-xl">&lt; 10ms</h4>
-                    <p className="text-sm text-foreground/60">Interaction latency</p>
+                    <h4 className="font-semibold text-foreground text-xl">
+                      Seconds, not minutes
+                    </h4>
+                    <p className="text-sm text-foreground/60">
+                      From upload to result
+                    </p>
                   </div>
                 </div>
               </motion.div>
@@ -217,7 +278,11 @@ export function LandingPage() {
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-xl order-1 md:order-2"
               >
-                <img src="/demo_image-2.png" alt="PDF Visual Workspace" className="w-full h-full object-cover object-left-top" />
+                <img
+                  src="/demo_image-2.png"
+                  alt="PDF Visual Workspace"
+                  className="w-full h-full object-cover object-left-top"
+                />
                 <div className="absolute inset-0 ring-1 ring-inset ring-black/10 rounded-3xl" />
               </motion.div>
             </div>
@@ -234,14 +299,18 @@ export function LandingPage() {
             className="space-y-8 max-w-3xl mx-auto"
           >
             <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-white">
-              Ready for the next step?
+              Stop fighting your PDFs.
             </h2>
             <p className="text-lg text-background/80 leading-relaxed font-light">
-              Join the ecosystem built for modern PDF intelligence. Enhance your productivity and experience limitless workflow management.
+              Join the ecosystem built for modern PDF intelligence. Enhance your
+              productivity and experience limitless workflow management and free.
             </p>
             <Link to="/register">
-              <Button size="lg" className="h-14 px-10 text-lg sm:w-auto bg-white text-black hover:bg-white/90 rounded-full mt-4">
-                Enter Workspace
+              <Button
+                size="lg"
+                className="h-14 px-10 text-lg sm:w-auto bg-white text-black hover:bg-white/90 rounded-full mt-4"
+              >
+                Get started for free
               </Button>
             </Link>
           </motion.div>
@@ -250,15 +319,23 @@ export function LandingPage() {
         {/* Footer */}
         <footer className="relative z-20 w-full py-12 bg-background border-t border-border">
           <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground tracking-tight">PDF Manager © 2026.</span>
+            <span className="font-medium text-foreground tracking-tight">
+              PDF Manager © 2026.
+            </span>
             <div className="flex gap-8">
-              <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
-              <a href="#" className="hover:text-foreground transition-colors">Terms</a>
-              <a href="#" className="hover:text-foreground transition-colors">Twitter</a>
+              <a href="#" className="hover:text-foreground transition-colors">
+                Privacy
+              </a>
+              <a href="#" className="hover:text-foreground transition-colors">
+                Terms
+              </a>
+              <a href="#" className="hover:text-foreground transition-colors">
+                Twitter
+              </a>
             </div>
           </div>
         </footer>
       </div>
     </PageTransition>
-  )
+  );
 }
