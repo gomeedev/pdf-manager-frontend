@@ -23,7 +23,14 @@ export function useAgent() {
       // because the backend might expect the history without the new message, 
       // or we can pass the history WITH the new message. The API structure typical
       // for this is to send message + previous history.
-      const response = await chatWithAgent(content, messages)
+      const cleanHistory = messages.map(msg => {
+        const cleaned: any = { role: msg.role, content: msg.content }
+        if (msg.name !== undefined && msg.name !== null) cleaned.name = msg.name
+        if (msg.tool_call_id !== undefined && msg.tool_call_id !== null) cleaned.tool_call_id = msg.tool_call_id
+        return cleaned
+      })
+      
+      const response = await chatWithAgent(content, cleanHistory)
       
       // Update with the full history returned from the server if available, 
       // or simply append the assistant's reply.

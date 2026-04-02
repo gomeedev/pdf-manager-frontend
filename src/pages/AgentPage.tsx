@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Send, Bot, User, Trash2, FileStack } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@/hooks/useAuth'
@@ -111,7 +113,7 @@ export function AgentPage() {
             )}
 
             <AnimatePresence initial={false}>
-              {messages.map((message, index) => (
+              {messages.filter(m => (m.role === 'user' || m.role === 'assistant') && m.content).map((message, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -135,9 +137,15 @@ export function AgentPage() {
                     <div className={`px-5 py-3.5 rounded-2xl text-sm leading-relaxed shadow-sm ${
                       message.role === 'user' 
                         ? 'bg-foreground text-background rounded-tr-sm' 
-                        : 'bg-muted text-foreground border border-border rounded-tl-sm'
+                        : 'bg-muted text-foreground border border-border rounded-tl-sm prose prose-sm max-w-none prose-p:leading-relaxed prose-pre:p-0'
                     }`}>
-                      {message.content}
+                      {message.role === 'user' ? (
+                        message.content
+                      ) : (
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {message.content!}
+                        </ReactMarkdown>
+                      )}
                     </div>
                   </div>
                 </motion.div>
