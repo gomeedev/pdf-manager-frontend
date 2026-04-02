@@ -19,16 +19,16 @@ export function Particles() {
     resize()
 
     // Antigravity style: fewer dots, flowing slowly, slightly colored
-    const numParticles = 120
+    const numParticles = 140
     const particles: any[] = []
 
     // Helper to get random color
     const colors = [
-      'rgba(59, 130, 246, 0.4)',  // Blue
-      'rgba(236, 72, 153, 0.4)',  // Pink
-      'rgba(16, 185, 129, 0.4)',  // Emerald
-      'rgba(139, 92, 246, 0.4)',  // Violet
-      'rgba(0, 0, 0, 0.3)'        // Gray/Black
+      'rgba(59, 130, 246, 1)',  // Blue
+      'rgba(236, 72, 153, 1)',  // Pink
+      'rgba(16, 185, 129, 1)',  // Emerald
+      'rgba(139, 92, 246, 1)',  // Violet
+      'rgba(0, 0, 0, 0.5)'        // Gray/Black
     ]
 
     for (let i = 0; i < numParticles; i++) {
@@ -68,14 +68,23 @@ export function Particles() {
         if (p.y < 0) p.y = canvas.height
         if (p.y > canvas.height) p.y = 0
 
-        // Mouse repulse/attract interactivo
-        const dx = mouse.x - p.x
-        const dy = mouse.y - p.y
+        // Mouse gravity: particles form an orbital sphere around the cursor
+        const dx = p.x - mouse.x
+        const dy = p.y - mouse.y
         const dist = Math.sqrt(dx * dx + dy * dy)
-        if (dist < 120) {
-          const force = (120 - dist) / 120
-          p.x -= dx * force * 0.02
-          p.y -= dy * force * 0.02
+        const influenceRadius = 200
+        const sphereRadius = 60
+
+        if (dist < influenceRadius) {
+          const force = (influenceRadius - dist) / influenceRadius
+          // Target position on the circumference of the sphere
+          const angle = Math.atan2(dy, dx)
+          const targetX = mouse.x + Math.cos(angle) * sphereRadius
+          const targetY = mouse.y + Math.sin(angle) * sphereRadius
+          
+          // Gradually pull particles towards the sphere surface
+          p.x += (targetX - p.x) * force * 0.05
+          p.y += (targetY - p.y) * force * 0.05
         }
 
         ctx.beginPath()
