@@ -46,6 +46,9 @@ export function DashboardPage() {
                 <Link to="/dashboard/operations">
                   <Button variant="ghost" size="sm">Operations</Button>
                 </Link>
+                <Link to="/dashboard/agent">
+                  <Button variant="ghost" size="sm">AI Agent</Button>
+                </Link>
               </div>
             </div>
             

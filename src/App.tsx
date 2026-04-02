@@ -6,6 +6,7 @@ import { LoginPage } from '@/pages/LoginPage'
 import { RegisterPage } from '@/pages/RegisterPage'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { OperationsPage } from '@/pages/OperationsPage'
+import { AgentPage } from '@/pages/AgentPage'
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -20,6 +21,7 @@ function AnimatedRoutes() {
       <Route element={<PrivateRoute />}>
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/dashboard/operations" element={<OperationsPage />} />
+        <Route path="/dashboard/agent" element={<AgentPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
