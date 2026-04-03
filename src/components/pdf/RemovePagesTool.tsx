@@ -42,7 +42,11 @@ export function RemovePagesTool({ pdfs, status, onRemove, result, onPreview }: R
     
     if (pages.length === 0) return
 
-    await onRemove(selectedId[0], pages, outputFilename.endsWith('.pdf') ? outputFilename : `${outputFilename}.pdf`)
+    try {
+      await onRemove(selectedId[0], pages, outputFilename.endsWith('.pdf') ? outputFilename : `${outputFilename}.pdf`)
+    } catch (err) {
+      console.error('Remove operation failed:', err)
+    }
   }
 
   return (
