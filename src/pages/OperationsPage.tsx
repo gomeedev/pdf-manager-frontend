@@ -7,9 +7,10 @@ import { MergeTool } from '@/components/pdf/MergeTool'
 import { SplitTool } from '@/components/pdf/SplitTool'
 import { CompressTool } from '@/components/pdf/CompressTool'
 import { RemovePagesTool } from '@/components/pdf/RemovePagesTool'
-import { FileStack, ArrowLeft, Layers, Scissors, Minimize2, Trash2, Loader2, EyeOff } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { FileStack, Layers, Scissors, Minimize2, Trash2, Loader2, EyeOff } from 'lucide-react'
+
 import { cn } from '@/lib/utils'
+import { Navbar } from '@/components/layout/Navbar'
 
 type ToolType = 'merge' | 'split' | 'compress' | 'remove'
 
@@ -40,33 +41,8 @@ export function OperationsPage() {
     <PageTransition>
       <div className="flex-1 w-full min-h-screen bg-background flex flex-col">
         {/* Navigation */}
-        <nav className="w-full border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <Link to="/dashboard" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors group">
-                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                <span className="text-sm font-medium">Back to Library</span>
-              </Link>
-              <div className="h-4 w-px bg-border" />
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 bg-foreground rounded flex items-center justify-center">
-                  <FileStack className="w-4 h-4 text-background" />
-                </div>
-                <span className="font-semibold text-foreground tracking-tight">PDF Operations</span>
-              </div>
-            </div>
-            
-            <div className="hidden md:flex items-center gap-4">
-              <div className="flex items-center gap-1 mr-4">
-                <Link to="/dashboard/agent">
-                  <button className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-md hover:bg-muted">
-                    AI Agent
-                  </button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </nav>
+        {/* Navigation */}
+        <Navbar />
 
         <main className="flex-1 max-w-[1600px] w-full mx-auto px-6 py-8 flex flex-col md:flex-row gap-8">
           {/* Sidebar Tabs */}

@@ -70,7 +70,7 @@ export function LandingPage() {
   // As the section enters the screen from the bottom ("start end") 
   // until it reaches the center ("center center"), scale from 0.85 to 1.2
   const videoScale = useTransform(scrollYProgress, [0, 1], [0.85, 1.2]);
-  const videoOpacity = useTransform(scrollYProgress, [0, 1], [0.6, 1]);
+  const videoOpacity = useTransform(scrollYProgress, [0, 1], [0.8, 1]);
 
   return (
     <PageTransition>

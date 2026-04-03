@@ -1,18 +1,13 @@
 import { useState } from 'react'
 import { PageTransition } from '@/components/animations/PageTransition'
-import { Button } from '@/components/ui/button'
-import { useAuth } from '@/hooks/useAuth'
-import { supabase } from '@/lib/supabaseClient'
 import { usePDFs } from '@/hooks/usePDFs'
 import { UploadDropzone } from '@/components/pdf/UploadDropzone'
 import { PDFList } from '@/components/pdf/PDFList'
 import { PDFPreviewModal } from '@/components/pdf/PDFPreviewModal'
 import { motion } from 'framer-motion'
-import { FileStack } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Navbar } from '@/components/layout/Navbar'
 
 export function DashboardPage() {
-  const { user } = useAuth()
   const { pdfs, loading, isUploading, uploadPdf, downloadPdf, previewPdf, deletePdf } = usePDFs()
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
@@ -21,47 +16,12 @@ export function DashboardPage() {
     if (url) setPreviewUrl(url)
   }
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-  }
-
   return (
     <PageTransition>
       <div className="flex-1 w-full min-h-screen bg-background">
         {/* Navigation Bar */}
-        <nav className="w-full border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-foreground rounded-lg flex items-center justify-center">
-                  <FileStack className="w-5 h-5 text-background" />
-                </div>
-                <span className="font-semibold text-foreground tracking-tight">PDF Manager</span>
-              </div>
-              
-              <div className="hidden md:flex items-center gap-1">
-                <Link to="/dashboard">
-                  <Button variant="ghost" size="sm" className="bg-muted">My Library</Button>
-                </Link>
-                <Link to="/dashboard/operations">
-                  <Button variant="ghost" size="sm">Operations</Button>
-                </Link>
-                <Link to="/dashboard/agent">
-                  <Button variant="ghost" size="sm">AI Agent</Button>
-                </Link>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-medium text-muted-foreground hidden sm:inline-block">
-                {user?.email}
-              </span>
-              <Button variant="outline" size="sm" onClick={handleLogout}>
-                Sign out
-              </Button>
-            </div>
-          </div>
-        </nav>
+        {/* Navigation Bar */}
+        <Navbar />
 
         {/* Main Content Area */}
         <main className="max-w-7xl mx-auto px-6 py-12 space-y-16">
