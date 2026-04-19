@@ -1,10 +1,12 @@
 import apiClient from './axiosClient'
 
-export type MessageRole = 'user' | 'assistant' | 'tool'
+export type MessageRole = 'user' | 'assistant' | 'tool' | 'system'
 
 export interface ChatMessage {
-  role: MessageRole
-  content: string
+  role: string
+  content: string | null
+  name?: string | null
+  tool_call_id?: string | null
 }
 
 export interface ChatRequest {

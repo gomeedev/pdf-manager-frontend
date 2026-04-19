@@ -7,16 +7,17 @@ interface PDFListProps {
   pdfs: PDFFile[]
   loading: boolean
   onDownload: (storagePath: string, filename: string) => Promise<void>
-  onPreview: (storagePath: string) => Promise<void>
+  onPreview: (storagePath: string) => Promise<string | null | void>
+  onDelete: (id: string) => Promise<void>
 }
 
-export function PDFList({ pdfs, loading, onDownload, onPreview }: PDFListProps) {
+export function PDFList({ pdfs, loading, onDownload, onPreview, onDelete }: PDFListProps) {
   if (loading) {
     return (
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {[...Array(4)].map((_, i) => (
-          <div 
-            key={i} 
+          <div
+            key={i}
             className="h-44 bg-muted/50 rounded-xl animate-pulse border border-border/50"
           />
         ))}
@@ -42,11 +43,12 @@ export function PDFList({ pdfs, loading, onDownload, onPreview }: PDFListProps) 
     <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       <AnimatePresence>
         {pdfs.map((pdf) => (
-          <PDFCard 
-            key={pdf.id} 
-            pdf={pdf} 
-            onDownload={onDownload} 
+          <PDFCard
+            key={pdf.id}
+            pdf={pdf}
+            onDownload={onDownload}
             onPreview={onPreview}
+            onDelete={onDelete}
           />
         ))}
       </AnimatePresence>

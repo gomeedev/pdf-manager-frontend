@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { OperationStatus } from '@/hooks/useOperations'
 import { motion, Reorder } from 'framer-motion'
-import { Loader2, AlertCircle, FileText, CheckCircle2, Download } from 'lucide-react'
+import { Loader2, AlertCircle, FileText, CheckCircle2, Download, Eye } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 interface MergeToolProps {
@@ -14,9 +14,10 @@ interface MergeToolProps {
   status: OperationStatus
   onMerge: (fileIds: string[], outputFilename: string) => Promise<any>
   result: any
+  onPreview: (storagePath: string) => Promise<void>
 }
 
-export function MergeTool({ pdfs, status, onMerge, result }: MergeToolProps) {
+export function MergeTool({ pdfs, status, onMerge, result, onPreview }: MergeToolProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [outputFilename, setOutputFilename] = useState('merged_document.pdf')
   const { downloadPdf } = usePDFs()
@@ -32,7 +33,7 @@ export function MergeTool({ pdfs, status, onMerge, result }: MergeToolProps) {
   }
 
   // Sorting based on selected order
-  const selectedPdfs = selectedIds.map(id => pdfs.find(p => p.id === id)!)
+  const selectedPdfs = selectedIds.map(id => pdfs.find(p => p.id === id)).filter(Boolean) as PDFFile[]
 
   const handleReorder = (newOrder: PDFFile[]) => {
     setSelectedIds(newOrder.map(pdf => pdf.id))
@@ -41,7 +42,15 @@ export function MergeTool({ pdfs, status, onMerge, result }: MergeToolProps) {
   const handleExecute = async (e: React.FormEvent) => {
     e.preventDefault()
     if (selectedIds.length < 2) return
-    await onMerge(selectedIds, outputFilename.endsWith('.pdf') ? outputFilename : `${outputFilename}.pdf`)
+    try {
+      const data = await onMerge(selectedIds, outputFilename.endsWith('.pdf') ? outputFilename : `${outputFilename}.pdf`)
+      // Auto-preview the merged result in the Live Preview pane
+      if (data?.data?.storage_path) {
+        await onPreview(data.data.storage_path)
+      }
+    } catch (err) {
+      console.error('Merge operation failed:', err)
+    }
   }
 
   return (
@@ -70,10 +79,17 @@ export function MergeTool({ pdfs, status, onMerge, result }: MergeToolProps) {
                       value={pdf}
                       className="flex items-center gap-3 p-3 bg-background border border-border rounded-xl cursor-grab active:cursor-grabbing hover:border-foreground/20 transition-colors shadow-sm"
                     >
-                      <div className="p-1.5 bg-muted rounded-md text-muted-foreground">
+                      <div className="p-1.5 bg-muted rounded-md text-muted-foreground flex-shrink-0">
                         <FileText className="w-4 h-4" />
                       </div>
                       <span className="text-sm font-medium truncate flex-1">{pdf.filename}</span>
+                      <button 
+                        type="button"
+                        onClick={async (e) => { e.stopPropagation(); await onPreview(pdf.storage_path); }} 
+                        className="p-1.5 hover:bg-muted rounded text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
                     </Reorder.Item>
                   ))}
                 </Reorder.Group>
